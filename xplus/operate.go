@@ -100,6 +100,20 @@ func SelectOne[T any](q *Query[T]) (*T, error) {
 	return &entity, nil
 }
 
+func SelectOneModel[T any, R any](q *Query[T]) (*R, error) {
+	var entity T
+	if has, err := q.Limit(1).Get(&entity); err != nil {
+		return nil, err
+	} else if !has {
+		return nil, nil
+	}
+	r := new(R)
+	if err := copier.Copy(r, entity); err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
 func SelectByIds[T any](ids any) ([]*T, error) {
 	query := NewQuery[T]()
 	query.In("id", ids)
