@@ -1,2 +1,2 @@
 # xorm-plus
-xorm-plus
+xorm encapsulation
