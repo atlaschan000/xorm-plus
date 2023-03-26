@@ -64,6 +64,10 @@ func Engine() (*xorm.Engine, error) {
 	return dbEngine, nil
 }
 
+func SetLogger(logger core.ILogger) {
+	dbEngine.SetLogger(logger)
+}
+
 func Close() {
 	if dbEngine != nil {
 		_ = dbEngine.Close()
