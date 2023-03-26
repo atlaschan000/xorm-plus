@@ -196,3 +196,25 @@ func SelectPageModel[T any, R any](page *Page[R], q *Query[T]) (*Page[R], error)
 	page.Records = results
 	return page, nil
 }
+
+func SelectExist[T any](q *Query[T]) (bool, error) {
+	return q.session.Exist()
+}
+
+func SelectSubExistOne[T any](q *Query[T], f func(sub *Query[T])) (*T, error) {
+	var entity T
+	_, err := q.Exists(f).Get(&entity)
+	if err != nil {
+		return nil, err
+	}
+	return &entity, nil
+}
+
+func SelectSubExistList[T any](q *Query[T], f func(sub *Query[T])) ([]*T, error) {
+	var entities []*T
+	err := q.Exists(f).Find(entities)
+	if err != nil {
+		return nil, err
+	}
+	return entities, nil
+}

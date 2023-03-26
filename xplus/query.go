@@ -231,8 +231,9 @@ func (q *Query[T]) Count(bean T) (int64, error) {
 	return q.session.Count(bean)
 }
 
-func (q *Query[T]) Exists(f func(q *Query[T])) (bool, error) {
+func (q *Query[T]) Exists(f func(q *Query[T])) *Query[T] {
 	subQuery := q.session.Select("1")
 	f(&Query[T]{session: subQuery})
-	return q.session.Exist(subQuery)
+	q.session = q.session.Where("EXISTS (?)", subQuery)
+	return q
 }
