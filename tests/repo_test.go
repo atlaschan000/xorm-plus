@@ -9,16 +9,12 @@ import (
 	"testing"
 )
 
-var db *xorm.Engine
+var config xplus.Config
 
 func init() {
-	dsn := "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true"
-	if database, err := xorm.NewEngine("mysql", dsn); err != nil {
-		panic(err)
-	} else {
-		db = database
+	config = xplus.Config{
+		DataSourceName: "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=true",
 	}
-	xplus.Init(db)
 }
 
 type Test struct {
@@ -28,6 +24,13 @@ type Test struct {
 
 type T2 struct {
 	ParentId int64
+}
+
+func TestInitEngine(t *testing.T) {
+
+	err := xplus.NewEngineWithConfig(&config)
+	assert.Equal(t, nil, err)
+
 }
 
 func TestSelectOne(t *testing.T) {

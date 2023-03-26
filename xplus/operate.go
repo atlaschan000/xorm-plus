@@ -5,8 +5,6 @@ import (
 	"github.com/jinzhu/copier"
 )
 
-var dbEngine *xorm.Engine
-
 type SessionFunc func(session *xorm.Session) error
 
 type Page[T any] struct {
@@ -15,10 +13,6 @@ type Page[T any] struct {
 	Total     int64
 	TotalPage int64
 	Records   []*T
-}
-
-func Init(engine *xorm.Engine) {
-	dbEngine = engine
 }
 
 func Insert[T any](obj *T) (int64, error) {
