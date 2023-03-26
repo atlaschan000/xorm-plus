@@ -15,9 +15,10 @@ type Config struct {
 	MaxIdleConns    int
 	MaxOpenConns    int
 	ConnMaxLifetime time.Duration
-	Logger          core.ILogger
-	ShowSQL         bool
-	ShowExecTime    bool
+	LogLevel        core.LogLevel
+
+	ShowSQL      bool
+	ShowExecTime bool
 }
 
 var (
@@ -46,8 +47,8 @@ func NewEngineWithConfig(cfg *Config) (err error) {
 		if cfg.ConnMaxLifetime > 0 {
 			engine.SetConnMaxLifetime(cfg.ConnMaxLifetime)
 		}
-		if cfg.Logger != nil {
-			engine.SetLogger(cfg.Logger)
+		if cfg.LogLevel > 0 {
+			engine.SetLogLevel(cfg.LogLevel)
 		}
 		engine.ShowSQL(cfg.ShowSQL)
 		engine.ShowExecTime(cfg.ShowExecTime)
