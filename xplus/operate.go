@@ -100,6 +100,16 @@ func SelectOne[T any](q *Query[T]) (*T, error) {
 	return &entity, nil
 }
 
+func SelectOneModelWithTableName[T any](tableName string, q *Query[T]) (*T, error) {
+	var entity T
+	q.session = q.session.Table(tableName)
+	_, err := q.Get(&entity)
+	if err != nil {
+		return nil, err
+	}
+	return &entity, nil
+}
+
 func SelectOneModel[T any, R any](q *Query[T]) (*R, error) {
 	var entity T
 	if has, err := q.Limit(1).Get(&entity); err != nil {
@@ -157,6 +167,16 @@ func SelectListModel[T any, R any](q *Query[T]) ([]*R, error) {
 	return result, nil
 }
 
+func SelectListModelWithTableName[T any](tableName string, q *Query[T]) ([]*T, error) {
+	var entities []*T
+	q.session = q.session.Table(tableName)
+	err := q.Find(entities)
+	if err != nil {
+		return nil, err
+	}
+	return entities, nil
+}
+
 func SelectPage[T any](page *Page[T], q *Query[T]) (*Page[T], error) {
 
 	countQuery := *q
@@ -209,6 +229,28 @@ func SelectPageModel[T any, R any](page *Page[R], q *Query[T]) (*Page[R], error)
 	}
 	page.Records = results
 	return page, nil
+}
+
+func SelectPageModelWithTableName[T any](tableName string, page *Page[T], q *Query[T]) (*Page[T], error) {
+	countQuery := *q
+	countQuery.session = countQuery.session.Table(tableName)
+	var entity T
+	total, err := countQuery.Count(entity)
+	if err != nil {
+		return nil, err
+	}
+	page.Total = total
+	page.TotalPage = (total + int64(page.Size) - 1) / int64(page.Size)
+	var results []*T
+	q.Paginate(page.Current, page.Size)
+	q.session = q.session.Table(tableName)
+	err = q.Find(results)
+	if err != nil {
+		return nil, err
+	}
+	page.Records = results
+	return page, nil
+
 }
 
 func SelectExist[T any](q *Query[T]) (bool, error) {
