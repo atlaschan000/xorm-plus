@@ -254,7 +254,7 @@ func SelectPageModelWithTableName[T any](tableName string, page *Page[T], q *Que
 }
 
 func SelectExist[T any](q *Query[T]) (bool, error) {
-	return q.session.Exist()
+	return q.session.Exist(new(T))
 }
 
 func SelectSubExistOne[T any](q *Query[T], f func(sub *Query[T])) (*T, error) {
