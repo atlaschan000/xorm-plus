@@ -180,6 +180,7 @@ func SelectListModelWithTableName[T any](tableName string, q *Query[T]) ([]*T, e
 func SelectPage[T any](page *Page[T], q *Query[T]) (*Page[T], error) {
 
 	countQuery := *q
+	countQuery.session = q.session.Clone()
 	var entity T
 	total, err := countQuery.Count(entity)
 	if err != nil {
@@ -199,6 +200,7 @@ func SelectPage[T any](page *Page[T], q *Query[T]) (*Page[T], error) {
 func SelectPageModel[T any, R any](page *Page[R], q *Query[T]) (*Page[R], error) {
 
 	countQuery := *q
+	countQuery.session = q.session.Clone()
 	var entity T
 	total, err := countQuery.Count(entity)
 	if err != nil {
@@ -233,6 +235,7 @@ func SelectPageModel[T any, R any](page *Page[R], q *Query[T]) (*Page[R], error)
 
 func SelectPageModelWithTableName[T any](tableName string, page *Page[T], q *Query[T]) (*Page[T], error) {
 	countQuery := *q
+	countQuery.session = q.session.Clone()
 	countQuery.session = countQuery.session.Table(tableName)
 	var entity T
 	total, err := countQuery.Count(entity)
