@@ -219,8 +219,9 @@ func (q *Query[T]) SetExpr(column string, expression string) *Query[T] {
 	return q
 }
 
-func (q *Query[T]) Find(beans []*T) error {
-	return q.session.Find(&beans)
+func (q *Query[T]) Find(beans []*T) ([]*T, error) {
+	err := q.session.Find(&beans)
+	return beans,err
 }
 
 func (q *Query[T]) Get(bean *T) (bool, error) {
