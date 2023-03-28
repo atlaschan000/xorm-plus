@@ -1,8 +1,8 @@
 package xplus
 
 import (
-	"github.com/go-xorm/xorm"
 	"github.com/jinzhu/copier"
+	"xorm.io/xorm"
 )
 
 type SessionFunc func(session *xorm.Session) error
@@ -32,7 +32,7 @@ func Update[T any](obj *T, cols ...string) (int64, error) {
 }
 
 func UpdateById[T any](id any, entity *T) (int64, error) {
-	return dbEngine.Id(id).Update(entity)
+	return dbEngine.ID(id).Update(entity)
 }
 
 func UpdateFields[T any](q *Query[T], entity *T) (int64, error) {
@@ -128,7 +128,7 @@ func SelectByIds[T any](ids any) ([]*T, error) {
 	query := NewQuery[T]()
 	query.In("id", ids)
 	var entities []*T
-	entities,err := query.Find(entities)
+	entities, err := query.Find(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func SelectListModel[T any, R any](q *Query[T]) ([]*R, error) {
 func SelectListModelWithTableName[T any](tableName string, q *Query[T]) ([]*T, error) {
 	var entities []*T
 	q.session = q.session.Table(tableName)
-	entities,err := q.Find(entities)
+	entities, err := q.Find(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func SelectPage[T any](page *Page[T], q *Query[T]) (*Page[T], error) {
 	page.Total = total
 	page.TotalPage = (total + int64(page.Size) - 1) / int64(page.Size)
 	var results []*T
-	results,err = q.Paginate(page.Current, page.Size).Find(results)
+	results, err = q.Paginate(page.Current, page.Size).Find(results)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +199,8 @@ func SelectPage[T any](page *Page[T], q *Query[T]) (*Page[T], error) {
 func SelectPageModel[T any, R any](page *Page[R], q *Query[T]) (*Page[R], error) {
 
 	countQuery := *q
-	countQuery.session = q.session.Clone()
+	s := *q.session
+	countQuery.session = &s
 	var entity T
 	total, err := countQuery.Count(entity)
 	if err != nil {
@@ -244,7 +245,7 @@ func SelectPageModelWithTableName[T any](tableName string, page *Page[T], q *Que
 	var results []*T
 	q.Paginate(page.Current, page.Size)
 	q.session = q.session.Table(tableName)
-	results,err = q.Find(results)
+	results, err = q.Find(results)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +269,7 @@ func SelectSubExistOne[T any](q *Query[T], f func(sub *Query[T])) (*T, error) {
 
 func SelectSubExistList[T any](q *Query[T], f func(sub *Query[T])) ([]*T, error) {
 	var entities []*T
-	entities,err := q.Exists(f).Find(entities)
+	entities, err := q.Exists(f).Find(entities)
 	if err != nil {
 		return nil, err
 	}
