@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/xorm"
 	"sync"
 	"time"
 	"xorm.io/core"
+	"xorm.io/xorm"
+	"xorm.io/xorm/log"
 )
 
 type Config struct {
@@ -15,7 +16,7 @@ type Config struct {
 	MaxIdleConns    int
 	MaxOpenConns    int
 	ConnMaxLifetime time.Duration
-	LogLevel        core.LogLevel
+	LogLevel        log.LogLevel
 
 	ShowSQL      bool
 	ShowExecTime bool
@@ -51,7 +52,6 @@ func NewEngineWithConfig(cfg *Config) (err error) {
 			engine.SetLogLevel(cfg.LogLevel)
 		}
 		engine.ShowSQL(cfg.ShowSQL)
-		engine.ShowExecTime(cfg.ShowExecTime)
 		dbEngine = engine
 	})
 	return nil
