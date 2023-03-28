@@ -1,6 +1,9 @@
 package xplus
 
-import "github.com/go-xorm/xorm"
+import (
+	"xorm.io/builder"
+	"xorm.io/xorm"
+)
 
 type Query[T any] struct {
 	engine  *xorm.Engine
@@ -153,8 +156,8 @@ func (q *Query[T]) In(column string, values interface{}) *Query[T] {
 	return q
 }
 
-func (q *Query[T]) InSql(column string, sql string) *Query[T] {
-	q.session = q.session.In(column, sql)
+func (q *Query[T]) InBuilder(column string, builder builder.Builder) *Query[T] {
+	q.session = q.session.In(column, builder)
 	return q
 }
 
@@ -163,8 +166,8 @@ func (q *Query[T]) NotIn(column string, values interface{}) *Query[T] {
 	return q
 }
 
-func (q *Query[T]) NotInSql(column string, sql string) *Query[T] {
-	q.session = q.session.NotIn(column, sql)
+func (q *Query[T]) NotInBuilder(column string, builder builder.Builder) *Query[T] {
+	q.session = q.session.NotIn(column, builder)
 	return q
 }
 
@@ -221,7 +224,7 @@ func (q *Query[T]) SetExpr(column string, expression string) *Query[T] {
 
 func (q *Query[T]) Find(beans []*T) ([]*T, error) {
 	err := q.session.Find(&beans)
-	return beans,err
+	return beans, err
 }
 
 func (q *Query[T]) Get(bean *T) (bool, error) {
