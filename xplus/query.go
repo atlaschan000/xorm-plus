@@ -156,7 +156,7 @@ func (q *Query[T]) In(column string, values interface{}) *Query[T] {
 	return q
 }
 
-func (q *Query[T]) InBuilder(column string, builder builder.Builder) *Query[T] {
+func (q *Query[T]) InBuilder(column string, builder *builder.Builder) *Query[T] {
 	q.session = q.session.In(column, builder)
 	return q
 }
@@ -166,7 +166,7 @@ func (q *Query[T]) NotIn(column string, values interface{}) *Query[T] {
 	return q
 }
 
-func (q *Query[T]) NotInBuilder(column string, builder builder.Builder) *Query[T] {
+func (q *Query[T]) NotInBuilder(column string, builder *builder.Builder) *Query[T] {
 	q.session = q.session.NotIn(column, builder)
 	return q
 }
