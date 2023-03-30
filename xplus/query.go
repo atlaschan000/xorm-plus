@@ -241,3 +241,11 @@ func (q *Query[T]) Exists(f func(q *Query[T])) *Query[T] {
 	q.session = q.session.Where("EXISTS (?)", subQuery)
 	return q
 }
+
+func (q *Query[T]) sumInt(bean T,fields string) (int64,error) {
+	return q.session.SumInt(bean,fields)
+}
+
+func (q *Query[T]) sum(bean T,fields string) (float64,error) {
+	return q.session.Sum(bean,fields)
+}
