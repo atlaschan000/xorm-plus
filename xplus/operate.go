@@ -146,7 +146,7 @@ func SelectList[T any](q *Query[T]) ([]*T, error) {
 
 func SelectListModel[T any, R any](q *Query[T]) ([]*R, error) {
 	var entity T
-	rows, err := q.session.Rows(entity)
+	rows, err := q.session.Rows(&entity)
 	if err != nil {
 		return nil, err
 	}
@@ -274,4 +274,9 @@ func SelectSubExistList[T any](q *Query[T], f func(sub *Query[T])) ([]*T, error)
 		return nil, err
 	}
 	return entities, nil
+}
+
+func SelectSumInt[T any](q *Query[T],fields string) (int64,error) {
+	var table T
+	return q.sumInt(table,fields)
 }
