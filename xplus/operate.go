@@ -178,78 +178,49 @@ func SelectListModelWithTableName[T any](tableName string, q *Query[T]) ([]*T, e
 }
 
 func SelectPage[T any](page *Page[T], q *Query[T]) (*Page[T], error) {
-
-	countQuery := *q
-	var entity T
-	total, err := countQuery.Count(entity)
+	
+	var results []*T
+	q.Paginate(page.Current, page.Size)
+	total, err := q.session.FindAndCount(&results)
 	if err != nil {
 		return nil, err
 	}
 	page.Total = total
 	page.TotalPage = (total + int64(page.Size) - 1) / int64(page.Size)
-	var results []*T
-	results, err = q.Paginate(page.Current, page.Size).Find(results)
-	if err != nil {
-		return nil, err
-	}
+
 	page.Records = results
 	return page, nil
 }
 
 func SelectPageModel[T any, R any](page *Page[R], q *Query[T]) (*Page[R], error) {
-
-	countQuery := *q
-	s := *q.session
-	countQuery.session = &s
-	var entity T
-	total, err := countQuery.Count(entity)
+	q.Paginate(page.Current, page.Size)
+	var entities []*T
+	total,err := q.session.FindAndCount(&entities)
 	if err != nil {
 		return nil, err
 	}
 	page.Total = total
 	page.TotalPage = (total + int64(page.Size) - 1) / int64(page.Size)
-
-	q.Paginate(page.Current, page.Size)
-	rows, err := q.session.Rows(entity)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	result := make([]*R, 0)
-	for rows.Next() {
-		t := new(T)
-		if err := rows.Scan(t); err != nil {
-			return nil, err
-		}
+	result := make([]*R, len(entities))
+	for k,entity := range entities {
 		r := new(R)
-		_ = copier.Copy(r, t)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, r)
+		_ = copier.Copy(r, entity)
+		result[k] = r
 	}
 	page.Records = result
 	return page, nil
 }
 
 func SelectPageModelWithTableName[T any](tableName string, page *Page[T], q *Query[T]) (*Page[T], error) {
-	countQuery := *q
-	countQuery.session = countQuery.session.Table(tableName)
-	var entity T
-	total, err := countQuery.Count(entity)
+	q.Paginate(page.Current, page.Size)
+	var entities []*T
+	total,err := q.session.Table(tableName).FindAndCount(&entities)
 	if err != nil {
 		return nil, err
 	}
 	page.Total = total
 	page.TotalPage = (total + int64(page.Size) - 1) / int64(page.Size)
-	var results []*T
-	q.Paginate(page.Current, page.Size)
-	q.session = q.session.Table(tableName)
-	results, err = q.Find(results)
-	if err != nil {
-		return nil, err
-	}
-	page.Records = results
+	page.Records = entities
 	return page, nil
 
 }
